@@ -1,0 +1,23 @@
+{
+  "name": "blog",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "SET NODE_OPTIONS=--openssl-legacy-provider && vite",
+    "build": "SET NODE_OPTIONS=--openssl-legacy-provider && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "element-plus": "^2.9.4",
+    "highlight.js": "^11.11.1",
+    "marked": "^15.0.7",
+    "pinia": "^3.0.1",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.1.0"
+  }
+}
