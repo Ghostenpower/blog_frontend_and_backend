@@ -1,5 +1,10 @@
 # 项目开发文档
 
+## 项目简介
+这是一个基于 Vue 3 和 Express 开发的个人博客系统，实现了文章管理、项目展示、动态分享等功能。前端采用 Vite 构建工具和 Element Plus 组件库，后端使用 Express 框架和 MongoDB 数据库，支持 Markdown 渲染和代码高亮等特性。
+
+示例网址：[http://blog.megajam.online/](http://blog.megajam.online/)
+
 ## 项目结构
 
 ### 前端目录结构 (blog/)
