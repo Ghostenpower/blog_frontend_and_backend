@@ -8,8 +8,8 @@ dotenv.config();
 
 // 创建COS实例
 const cos = new COS({
-  SecretId: process.env.COS_SECRET_ID || 'AKIDz20nmaIzVnrunUyEH5h6HE1bx61iCWde',
-  SecretKey: process.env.COS_SECRET_KEY || 'ua2GH5f195qNgngLn01rTt7Azay85pMh',
+  SecretId: process.env.COS_SECRET_ID,
+  SecretKey: process.env.COS_SECRET_KEY
 });
 
 // COS配置
