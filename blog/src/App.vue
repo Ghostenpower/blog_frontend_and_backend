@@ -1,12 +1,9 @@
 <script setup>
-import home from './view/main.vue'
-
+// 不需要导入main.vue，它会通过路由系统被渲染
 </script>
 
 <template>
-  <div>
-    <home />
-  </div>
+  <router-view />
 </template>
 
 <style scoped>

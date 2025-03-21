@@ -1,5 +1,8 @@
 // API配置
-export const API_BASE_URL = 'http://blog-bankend.megajam.online/api';
+export const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'http://blog-bankend.megajam.online/api'  // 生产环境
+  : 'http://localhost:5000/api';              // 开发环境
+
 
 // 通用请求函数
 export const fetchAPI = async (endpoint, options = {}) => {

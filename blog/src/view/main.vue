@@ -1,23 +1,52 @@
 <script setup>
-import { ref } from 'vue'
-import { House, User, Moon, Sunny, Collection, Document } from '@element-plus/icons-vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { House, User, Moon, Sunny, Collection, Document, Message } from '@element-plus/icons-vue'
 import { useThemeStore } from '../stores/theme'
 import { useUserStore } from '../stores/user'
-import { onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 const themeStore = useThemeStore()
 const userStore = useUserStore()
+const router = useRouter()
+
+// 检测当前视图是移动端还是桌面端
+const isMobile = ref(false)
+
+// 在组件挂载时检测设备类型
+const checkDeviceType = () => {
+  isMobile.value = window.innerWidth < 768
+}
 
 // 导航菜单数据
 const navItems = [
   { path: '/', name: '首页', icon: House },
   { path: '/articles', name: '文章', icon: Document },
   { path: '/projects', name: '作品集', icon: Collection },
+  { path: '/chat', name: '聊天室', icon: Message }
+]
+
+// 桌面端导航项目（包含关于页面）
+const desktopNavItems = [
+  ...navItems,
   { path: '/about', name: '关于', icon: User }
 ]
 
+// 处理头像点击事件，跳转到关于页面
+const goToAboutPage = () => {
+  router.push('/about')
+}
+
 onMounted(() => {
   themeStore.initTheme()
+  checkDeviceType()
+  
+  // 监听窗口大小变化
+  window.addEventListener('resize', checkDeviceType)
+})
+
+// 组件卸载时移除事件监听
+onUnmounted(() => {
+  window.removeEventListener('resize', checkDeviceType)
 })
 
 watch(() => themeStore.isDark, () => {
@@ -28,51 +57,44 @@ watch(() => themeStore.isDark, () => {
 <template>
   <div>
     <!-- 桌面端布局 -->
-    <div class="container hidden-xs-only">
-      <div class="layout">
-        <div class="sidebar">
-          <el-col :span="24" class="left-section">
-            <el-row class="header">
-              <el-col :span="6">
-                <div class="avatar-section">
-                  <el-avatar :size="40" :src="userStore.userInfo.avatar" />
-                </div>
-              </el-col>
-              <el-col :span="14">
-                <h3 class="blog-title">{{ userStore.userInfo.name }}的博客</h3>
-              </el-col>
-              <el-col :span="4">
-                <div class="theme-toggle">
-                  <el-icon :size="22" @click="themeStore.toggleTheme">
-                    <Moon v-if="!themeStore.isDark" />
-                    <Sunny v-else />
-                  </el-icon>
-                </div>
-              </el-col>
-            </el-row>
-
-            <div class="menu-list">
-              <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="menu-item"
-                :class="{ active: $route.path === item.path }" ytactive-class="active">
-                <el-icon>
-                  <component :is="item.icon" />
+    <div class="container" :class="{'is-mobile': isMobile}">
+      <!-- 侧边栏（只在桌面显示） -->
+      <div v-if="!isMobile" class="sidebar">
+        <el-col :span="24" class="left-section">
+          <el-row class="header">
+            <el-col :span="6">
+              <div class="avatar-section">
+                <el-avatar :size="40" :src="userStore.userInfo.avatar" />
+              </div>
+            </el-col>
+            <el-col :span="14">
+              <h3 class="blog-title">{{ userStore.userInfo.name }}的博客</h3>
+            </el-col>
+            <el-col :span="4">
+              <div class="theme-toggle">
+                <el-icon :size="22" @click="themeStore.toggleTheme">
+                  <Moon v-if="!themeStore.isDark" />
+                  <Sunny v-else />
                 </el-icon>
-                <span>{{ item.name }}</span>
-              </router-link>
-            </div>
-          </el-col>
-        </div>
+              </div>
+            </el-col>
+          </el-row>
 
-        <div class="main-content">
-          <router-view></router-view>
-        </div>
+          <div class="menu-list">
+            <router-link v-for="item in desktopNavItems" :key="item.path" :to="item.path" class="menu-item"
+              :class="{ active: $route.path === item.path }" active-class="active">
+              <el-icon>
+                <component :is="item.icon" />
+              </el-icon>
+              <span>{{ item.name }}</span>
+            </router-link>
+          </div>
+        </el-col>
       </div>
-    </div>
 
-    <!-- 移动端和平板布局 -->
-    <div class="mobile-container hidden-sm-and-up">
-      <el-header class="mobile-header">
-        <div class="mobile-user">
+      <!-- 移动端头部（只在移动端显示） -->
+      <el-header v-if="isMobile" class="mobile-header">
+        <div class="mobile-user" @click="goToAboutPage">
           <el-avatar :size="32" :src="userStore.userInfo.avatar" />
           <span class="mobile-title">{{ userStore.userInfo.name }}的博客</span>
         </div>
@@ -82,11 +104,16 @@ watch(() => themeStore.isDark, () => {
         </el-icon>
       </el-header>
 
-      <div class="mobile-content">
-        <router-view></router-view>
+      <!-- 共享的内容区 -->
+      <div :class="isMobile ? 'mobile-content' : 'main-content'">
+        <!-- 共享的router-view -->
+        <router-view v-slot="{ Component }">
+          <component :is="Component" />
+        </router-view>
       </div>
 
-      <el-footer class="mobile-footer">
+      <!-- 移动端底部导航（只在移动端显示） -->
+      <el-footer v-if="isMobile" class="mobile-footer">
         <div class="mobile-nav">
           <router-link 
             v-for="item in navItems" 
@@ -106,15 +133,23 @@ watch(() => themeStore.isDark, () => {
 
 <style scoped>
 .container {
-  min-height: 100vh;
   padding: 20px;
-}
-
-.layout {
   display: flex;
   gap: 20px;
   max-width: 1300px;
   margin: 0 auto;
+}
+
+/* 移动端容器样式 */
+.container.is-mobile {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  max-width: none;
+  width: 100%;
+  position: relative;
+  background-color: var(--el-bg-color);
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -206,17 +241,6 @@ watch(() => themeStore.isDark, () => {
 }
 
 /* 移动端和平板样式优化 */
-.mobile-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--el-bg-color);
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
-}
-
 .mobile-header {
   position: fixed;
   top: 0;
@@ -240,6 +264,14 @@ watch(() => themeStore.isDark, () => {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.mobile-user:active {
+  background-color: rgba(128, 128, 128, 0.1);
 }
 
 .mobile-title {
@@ -252,7 +284,7 @@ watch(() => themeStore.isDark, () => {
   flex: 1;
   margin-top: 60px;
   margin-bottom: 65px;
-  padding: 20px 16px;
+  /* padding: 20px 16px; */
   background-color: var(--el-bg-color);
   min-height: calc(100vh - 125px);
   width: 100%;
@@ -353,11 +385,6 @@ html.dark .mobile-footer {
   #app {
     width: 100%;
     overflow-x: hidden;
-  }
-
-  .mobile-container > * {
-    width: 100%;
-    box-sizing: border-box;
   }
 }
 </style>

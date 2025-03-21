@@ -10,6 +10,8 @@ import 'element-plus/theme-chalk/display.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import './styles/dark/css-vars.css'
 
+import './styles//body-margin/index.css'
+
 // 修正初始化顺序，先use再mount
 const app = createApp(App)
 app.use(pinia)

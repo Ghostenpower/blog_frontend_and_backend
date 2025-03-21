@@ -20,6 +20,7 @@ const openArticle = (url) => {
 }
 
 onMounted(() => {
+  console.log('onMounted called')
   fetchArticles()
 })
 </script>

@@ -14,7 +14,9 @@ const config = {
     'routes',
     'controllers',
     'config',
-    'middleware'
+    'middleware',
+    'socket',
+    'utils'
   ],
   // 部署目录
   deployDir: path.join(__dirname, 'deploy'),

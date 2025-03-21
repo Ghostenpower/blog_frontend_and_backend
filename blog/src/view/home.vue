@@ -14,6 +14,7 @@ const likedMoments = ref(new Set())
 const loading = ref(true)
 
 onMounted(async () => {
+  console.log('onMounted called')
   try {
     loading.value = true
     moments.value = await getMoments()
@@ -82,42 +83,44 @@ const goToMomentDetail = (momentId) => {
 </script>
 
 <template>
-  <div class="home-content">
-    <div class="moments-list">
-      <el-skeleton :loading="loading" animated>
-        <template #template>
-          <div class="skeleton-container">
-            <div v-for="i in 3" :key="i" class="skeleton-card">
-              <!-- 内容区域 -->
-              <el-skeleton-item variant="p" style="width: 100%; height: 80px" />
-              <!-- 链接区域 -->
-              <div style="margin-top: 15px">
-                <el-skeleton-item variant="text" style="width: 40%; margin-right: 10px" />
-                <el-skeleton-item variant="text" style="width: 30%" />
-              </div>
-              <!-- 底部信息 -->
-              <div class="skeleton-footer">
-                <el-skeleton-item variant="text" style="width: 120px" />
-                <el-skeleton-item variant="text" style="width: 50px" />
+  <div class="home">
+    <div class="home-content">
+      <div class="moments-list">
+        <el-skeleton :loading="loading" animated>
+          <template #template>
+            <div class="skeleton-container">
+              <div v-for="i in 3" :key="i" class="skeleton-card">
+                <!-- 内容区域 -->
+                <el-skeleton-item variant="p" style="width: 100%; height: 80px" />
+                <!-- 链接区域 -->
+                <div style="margin-top: 15px">
+                  <el-skeleton-item variant="text" style="width: 40%; margin-right: 10px" />
+                  <el-skeleton-item variant="text" style="width: 30%" />
+                </div>
+                <!-- 底部信息 -->
+                <div class="skeleton-footer">
+                  <el-skeleton-item variant="text" style="width: 120px" />
+                  <el-skeleton-item variant="text" style="width: 50px" />
+                </div>
               </div>
             </div>
-          </div>
-        </template>
+          </template>
 
-        <template #default>
-          <div v-if="moments.length === 0" class="empty-state">
-            <el-empty description="暂无动态" />
-          </div>
-          <moment-card
-            v-for="moment in moments"
-            :key="moment._id"
-            :moment="moment"
-            :is-liked="likedMoments.has(moment._id)"
-            @click="goToMomentDetail"
-            @like="toggleLike"
-          />
-        </template>
-      </el-skeleton>
+          <template #default>
+            <div v-if="moments.length === 0" class="empty-state">
+              <el-empty description="暂无动态" />
+            </div>
+            <moment-card
+              v-for="moment in moments"
+              :key="moment._id"
+              :moment="moment"
+              :is-liked="likedMoments.has(moment._id)"
+              @click="goToMomentDetail"
+              @like="toggleLike"
+            />
+          </template>
+        </el-skeleton>
+      </div>
     </div>
   </div>
 </template>
