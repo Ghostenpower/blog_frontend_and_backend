@@ -182,7 +182,7 @@ server/
     - 统一事件处理机制
     - 保持动画和过渡效果
 
-### [1.1.3] - 2024-03-21
+### [1.1.3] - 2025-03-21
 - 新增聊天室功能
   - 实现实时聊天功能
     - 支持文本和图片消息
@@ -212,6 +212,62 @@ server/
     - 减少不必要的重绘
     - 优化图片加载策略
     - 添加页面缓存支持
+
+### [1.1.4] - 2025-03-22
+- 集成腾讯云对象存储(COS)服务
+  - 实现聊天室图片云存储功能
+    - 添加 `cos-nodejs-sdk-v5` 依赖
+    - 配置腾讯云 COS 认证信息
+      - 使用环境变量管理 SecretId 和 SecretKey
+      - 遵循最小权限原则配置子账号
+    - 实现图片上传功能
+      - 配置广州地区存储桶
+      - 支持上传进度监控
+      - 添加错误处理机制
+  - 优化图片存储管理
+    - 使用环境变量管理敏感配置
+    - 规范化错误处理流程
+    - 添加上传进度提示
+  - 更新文档和配置说明
+    - 添加腾讯云 COS 配置指南
+    - 更新环境变量配置说明
+    - 补充最小权限原则说明
+
+### 配置示例
+```javascript
+// 腾讯云 COS 配置
+const COS = require('cos-nodejs-sdk-v5');
+
+const cos = new COS({
+  SecretId: process.env.SecretId,     // 环境变量中的 SecretId
+  SecretKey: process.env.SecretKey,   // 环境变量中的 SecretKey
+});
+
+// 文件上传示例
+cos.putObject({
+  Bucket: 'megajam-1301211650',    // 存储桶名称
+  Region: 'ap-guangzhou',          // 地域设置
+  Key: 'exampleobject',           // 文件名
+  StorageClass: 'STANDARD',       // 存储类型
+  Body: fileObject,               // 文件对象
+  onProgress: function(progressData) {
+    console.log(JSON.stringify(progressData));
+  }
+}, function(err, data) {
+  // 错误处理
+  if (err) {
+    console.log(err);
+    return;
+  }
+  // 成功处理
+  console.log(data);
+});
+```
+
+### 注意事项
+1. 需要在环境变量中配置 SecretId 和 SecretKey
+2. 建议使用子账号密钥，遵循最小权限原则
+3. 参考腾讯云文档进行权限配置：https://cloud.tencent.com/document/product/436/38618
 
 ## 开发规范
 
