@@ -82,7 +82,7 @@ watch(() => themeStore.isDark, () => {
 
           <div class="menu-list">
             <router-link v-for="item in desktopNavItems" :key="item.path" :to="item.path" class="menu-item"
-              :class="{ active: $route.path === item.path }" active-class="active">
+              :class="{ active: $route.path === item.path || ($route.path === '/' && item.path === '/') }">
               <el-icon>
                 <component :is="item.icon" />
               </el-icon>
@@ -120,7 +120,7 @@ watch(() => themeStore.isDark, () => {
             :key="item.path" 
             :to="item.path" 
             class="nav-item"
-            :class="{ active: $route.path === item.path }"
+            :class="{ active: $route.path === item.path || ($route.path === '/' && item.path === '/') }"
           >
             <el-icon><component :is="item.icon" /></el-icon>
             <span>{{ item.name }}</span>
